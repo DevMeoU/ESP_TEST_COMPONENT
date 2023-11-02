@@ -139,7 +139,6 @@ void app_main(void)
 
     char readFoo[50];
     app_spiffs_read_file("/storage/myfolder/foo.txt", readFoo, 50);
-
     printf("buff: %s\n", readFoo);
 
     /*
@@ -181,4 +180,17 @@ void app_main(void)
 
     /* All done, unmount partition and disable SPIFFS */
     app_spiffs_deinit();
+
+    /*
+     * *************************************************************************
+     *  /storage |
+     *           |-----> myfile.txt
+     *           |-----> myfolder |
+     *                            |-----> foo.txt (read file foo.txt)
+     * 
+     * Try to read file when SPIFFS is unregister.
+     * *************************************************************************
+     */
+
+    app_spiffs_read_file("/storage/myfolder/foo.txt", readFoo, 50);
 }

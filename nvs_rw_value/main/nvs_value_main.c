@@ -83,10 +83,10 @@ void app_main(void)
         printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
 
     }
-#endif
 
     app_nvs_value_commit(&my_handle);
     app_nvs_value_close(&my_handle);
+#endif
 
     printf("\n");
 

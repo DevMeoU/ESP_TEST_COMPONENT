@@ -15,6 +15,7 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "../component/app_nvs_value/inc/app_nvs_value.h"
+#include "../component/app_cmd_json/inc/app_cmd_json.h"
 
 #define STRING_LENGTH_MAX   (100U)
 
@@ -25,6 +26,7 @@ char user_password[STRING_LENGTH_MAX] = "oldPassword";
 void app_main(void)
 {
     esp_err_t err = ESP_OK;
+
     app_nvs_value_init();
 
     /* Reading to NVS partitions */
@@ -45,13 +47,30 @@ void app_main(void)
             printf("Error (%s) reading!\n", esp_err_to_name(err));
     }
 
-        /* Writing to NVS partitions */
-        printf("Writing string from NVS ... ");
-        strncpy(user_ssid, "Cortex-M7", sizeof(user_ssid));
-        strncpy(user_password, "038736402*", sizeof(user_password));
-        err = app_nvs_set_str("nvs", "User", "SSID", user_ssid);
-        err = app_nvs_set_str("nvs", "User", "PASS", user_password);
-        printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
+    /* Writing to NVS partitions */
+    printf("Writing string from NVS ... ");
+    strncpy(user_ssid, "Cortex-M7", sizeof(user_ssid));
+    strncpy(user_password, "038736402*", sizeof(user_password));
+    err = app_nvs_set_str("nvs", "User", "SSID", user_ssid);
+    err = app_nvs_set_str("nvs", "User", "PASS", user_password);
+    printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
+
+    // Create a cJSON object.
+    cJSON *object = cJSON_CreateObject();
+
+    // Add a string to the object.
+    cJSON_AddStringToObject(object, "ssid", user_ssid);
+    cJSON_AddStringToObject(object, "password", user_password);
+
+    // Print the JSON object.
+    char * data_string;
+    data_string = cJSON_PrintUnformatted(object);
+    printf("\nJson command: %s\n", data_string);
+    printf("\n%s\n", cJSON_Print(object));
+    free(data_string);
+    // Free the cJSON object.
+
+    cJSON_Delete(object);
 
 #if 0
     err = app_nvs_value_open(NVS_READWRITE, &my_handle);

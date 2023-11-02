@@ -18,7 +18,15 @@ extern "C"
 * 2) needed interfaces from external units
 * 3) internal and external interfaces from this unit
 ==================================================================================================*/
+#include <string.h>
+#include <stdint.h>
+#include <sys/unistd.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+#include "esp_err.h"
+#include "esp_log.h"
 #include "../inc/app_spiffs.h"
 
 /*==================================================================================================

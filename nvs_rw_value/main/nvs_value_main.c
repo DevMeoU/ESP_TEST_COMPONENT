@@ -13,31 +13,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
-#include "nvs_flash.h"
-#include "nvs.h"
+#include "../component/app_nvs_value/inc/app_nvs_value.h"
+
+nvs_handle_t my_handle;
 
 void app_main(void)
 {
-    // Initialize NVS
-    esp_err_t err = nvs_flash_init();
-    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        // NVS partition was truncated and needs to be erased
-        // Retry nvs_flash_init
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        err = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK( err );
+    app_nvs_value_init();
+    esp_err_t err = app_nvs_value_open(NVS_READWRITE, &my_handle);
 
-    // Open
-    printf("\n");
-    printf("Opening Non-Volatile Storage (NVS) handle... ");
-    nvs_handle_t my_handle;
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) {
-        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-    } else {
-        printf("Done\n");
-
+    if (err == ESP_OK) {
         // Read
         printf("Reading restart counter from NVS ... ");
         int32_t restart_counter = 0; // value will default to 0, if not set yet in NVS

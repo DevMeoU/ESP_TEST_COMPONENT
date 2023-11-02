@@ -10,23 +10,59 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <stdio.h>
+#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "../component/app_nvs_value/inc/app_nvs_value.h"
 
+#define STRING_LENGTH_MAX   (100U)
+
 nvs_handle_t my_handle;
+char user_ssid[STRING_LENGTH_MAX] = "my_ssid";
+char user_password[STRING_LENGTH_MAX] = "oldPassword";
 
 void app_main(void)
 {
+    esp_err_t err = ESP_OK;
     app_nvs_value_init();
-    esp_err_t err = app_nvs_value_open(NVS_READWRITE, &my_handle);
+
+    /* Reading to NVS partitions */
+    printf("Reading string from NVS ... ");
+    err = app_nvs_get_str("nvs", "User", "SSID", user_ssid, STRING_LENGTH_MAX);
+    err = app_nvs_get_str("nvs", "User", "PASS", user_password, STRING_LENGTH_MAX);
+
+    switch (err) {
+        case ESP_OK:
+            printf("Done\n");
+            printf("ssid: %s\n", user_ssid);
+            printf("Pass: %s\n", user_password);
+            break;
+        case ESP_ERR_NVS_NOT_FOUND:
+            printf("The value is not initialized yet!\n");
+            break;
+        default :
+            printf("Error (%s) reading!\n", esp_err_to_name(err));
+    }
+
+        /* Writing to NVS partitions */
+        printf("Writing string from NVS ... ");
+        strncpy(user_ssid, "Cortex-M7", sizeof(user_ssid));
+        strncpy(user_password, "038736402*", sizeof(user_password));
+        err = app_nvs_set_str("nvs", "User", "SSID", user_ssid);
+        err = app_nvs_set_str("nvs", "User", "PASS", user_password);
+        printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
+
+#if 0
+    err = app_nvs_value_open(NVS_READWRITE, &my_handle);
 
     if (err == ESP_OK) {
         // Read
         printf("Reading restart counter from NVS ... ");
-        int32_t restart_counter = 0; // value will default to 0, if not set yet in NVS
-        err = nvs_get_i32(my_handle, "restart_counter", &restart_counter);
+        uint32_t restart_counter = 0; // value will default to 0, if not set yet in NVS
+        err = nvs_get_u32(my_handle, "restart_counter", &restart_counter);
+
+        // err = app_nvs_get_u32("nvs", "User", "Pass", &restart_counter);
         switch (err) {
             case ESP_OK:
                 printf("Done\n");
@@ -42,20 +78,15 @@ void app_main(void)
         // Write
         printf("Updating restart counter in NVS ... ");
         restart_counter++;
-        err = nvs_set_i32(my_handle, "restart_counter", restart_counter);
+        err = nvs_set_u32(my_handle, "restart_counter", restart_counter);
+        // err = app_nvs_set_u32("nvs", "User", "Pass", restart_counter);
         printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
 
-        // Commit written value.
-        // After setting any values, nvs_commit() must be called to ensure changes are written
-        // to flash storage. Implementations may write to storage at other times,
-        // but this is not guaranteed.
-        printf("Committing updates in NVS ... ");
-        err = nvs_commit(my_handle);
-        printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
-
-        // Close
-        nvs_close(my_handle);
     }
+#endif
+
+    app_nvs_value_commit(&my_handle);
+    app_nvs_value_close(&my_handle);
 
     printf("\n");
 

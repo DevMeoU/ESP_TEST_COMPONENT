@@ -76,6 +76,8 @@ typedef const char cchar;
 ==================================================================================================*/
 void app_nvs_value_init();
 esp_err_t app_nvs_value_open (nvs_open_mode_t open_mode, nvs_handle_t * nvs_handle);
+esp_err_t app_nvs_value_commit(nvs_handle_t * nvs_handle);
+void app_nvs_value_close(nvs_handle_t * nvs_handle);
 
 nvs_type_t nvs_str_to_type(cchar* type);
 cchar* nvs_type_to_str(nvs_type_t type);

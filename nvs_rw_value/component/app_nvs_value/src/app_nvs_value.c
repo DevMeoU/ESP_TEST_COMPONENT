@@ -161,6 +161,25 @@ esp_err_t app_nvs_value_open (nvs_open_mode_t open_mode, nvs_handle_t * nvs_hand
     return err;
 }
 
+esp_err_t app_nvs_value_commit(nvs_handle_t * nvs_handle) {
+	/* 
+	 * Commit written value.
+	 * After setting any values, nvs_commit() must be called to ensure changes are written
+	 * to flash storage. Implementations may write to storage at other times,
+	 * but this is not guaranteed. 
+	 */
+	printf("Committing updates in NVS ... ");
+	esp_err_t err = nvs_commit((*nvs_handle));
+	printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
+	
+	return err;
+}
+
+void app_nvs_value_close(nvs_handle_t * nvs_handle) {
+	// Close
+	printf("Closing Non-Volatile Storage (NVS) handle... ");
+	nvs_close((*nvs_handle));
+}
 
 nvs_type_t nvs_str_to_type(cchar* type) {
 	if (type == NULL) return NVS_TYPE_ANY;

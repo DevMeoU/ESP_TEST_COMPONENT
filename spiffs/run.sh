@@ -1,1 +1,0 @@
-idf.py -p COM4 clean build flash monitor

@@ -73,7 +73,7 @@ void app_main(void)
      * *************************************************************************
      */
 
-    char * hello = "Hello World!";
+    char * hello = "Hello World!\n";
     app_spiffs_write_file("/storage/hello.txt", hello);
 
     /*
@@ -98,7 +98,7 @@ void app_main(void)
      * *************************************************************************
      */
 
-    char * readme = "This is read my produce more info about myself!";
+    char * readme = "This is read my produce more info about myself!\n";
     app_spiffs_write_file("/storage/myfolder/readme.txt", readme);
 
     /*
